@@ -11,13 +11,14 @@ import SnowplowTracker
 
 public class MobileSDK {
     private let urlFormat = "https://api%@-eu1.agillic.net";
-    private var collectorEndpoint = "localhost:8291";
+    private var collectorEndpoint = "snowplowtrack-eu1.agillic.net";
     private var auth: Auth? = nil;
     private var methodType : SPRequestOptions = .post
-    private var protocolType : SPProtocol = .http
+    private var protocolType : SPProtocol = .https
     private var tracker: SPTracker?
     private var clientAppId: String = "N/A"
     private var clientAppVersion: String = "N/A"
+    private var solutionId : String? = nil
     private var pushNotificationToken: String?
     private var registrationEndpoint: String?
     private var userId: String?
@@ -48,7 +49,7 @@ public class MobileSDK {
             builder!.setUrlEndpoint(url)
             builder!.setHttpMethod(method)
             //builder!.setCallback(self)
-            builder!.setProtocol(SPProtocol.http)
+            builder!.setProtocol(self.protocolType)
             builder!.setEmitRange(500)
             builder!.setEmitThreadPoolSize(20)
             builder!.setByteLimitPost(52000)
@@ -101,6 +102,8 @@ public class MobileSDK {
         let json : [String:String] = ["appInstallationId": tracker!.getSessionUserId(),
                                       "clientAppId": self.clientAppId,
                                       "clientAppVersion": self.clientAppVersion,
+                                      "osName" : SPUtilities.getOSType(),
+                                      "osVersion" : SPUtilities.getOSVersion(),
                                       "pushNotificationToken" :
                                         self.pushNotificationToken != nil ? self.pushNotificationToken! : "",
                                       "deviceModel": SPUtilities.getDeviceModel(),
@@ -153,11 +156,8 @@ public class MobileSDK {
 
 }
 
-public class Auth {
-    public init() {} 
-    public func getAuthInfo() -> String {
-        return "NOT_IMPLEMENTED"
-    }
+public protocol Auth {
+    func getAuthInfo() -> String
 }
 
 public class BasicAuth : Auth {
@@ -167,7 +167,7 @@ public class BasicAuth : Auth {
         authInfo = "Basic " + userPw.data(using: .utf8)!.base64EncodedString();
     }
     
-    public override func getAuthInfo() -> String {
+    public func getAuthInfo() -> String {
         return authInfo;
     }
 }
