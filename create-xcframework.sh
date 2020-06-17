@@ -5,11 +5,11 @@ FRAMEWORK_FOLDER_NAME="${PROJECT_NAME}_XCFramework"
 # set framework name or read it from project by this variable
 FRAMEWORK_NAME="${PROJECT_NAME}"
 #xcframework path
-FRAMEWORK_PATH="${HOME}/Desktop/${FRAMEWORK_FOLDER_NAME}/${FRAMEWORK_NAME}.xcframework"
+FRAMEWORK_PATH="${PROJECT_DIR}/build/${FRAMEWORK_FOLDER_NAME}/${FRAMEWORK_NAME}.xcframework"
 # set path for iOS simulator archive
-SIMULATOR_ARCHIVE_PATH="${PROJECT_DIR}/${FRAMEWORK_FOLDER_NAME}/simulator.xcarchive"
+SIMULATOR_ARCHIVE_PATH="${PROJECT_DIR}/build/${FRAMEWORK_FOLDER_NAME}/simulator.xcarchive"
 # set path for iOS device archive
-IOS_DEVICE_ARCHIVE_PATH="${PROJECT_DIR}/${FRAMEWORK_FOLDER_NAME}/iOS.xcarchive"
+IOS_DEVICE_ARCHIVE_PATH="${PROJECT_DIR}/build/${FRAMEWORK_FOLDER_NAME}/iOS.xcarchive"
 rm -rf "${FRAMEWORK_PATH}"
 echo "Deleted ${FRAMEWORK_PATH}"
 mkdir "${FRAMEWORK_PATH}"
