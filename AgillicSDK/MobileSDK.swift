@@ -3,13 +3,14 @@
 //  SnowplowSwiftDemo
 //
 //  Created by Dennis Schafroth on 27/04/2020.
-//  Copyright © 2020 snowplowanalytics. All rights reserved.
+//  Copyright © 2020 Agillic. All rights reserved.
 //
 
 import Foundation
 import SnowplowTracker
 
-public class MobileSDK {
+public class MobileSDK : NSObject, SPRequestCallback {
+    
     private let urlFormat = "https://api%@-eu1.agillic.net";
     private var collectorEndpoint = "snowplowtrack-eu1.agillic.net";
     private var auth: Auth? = nil;
@@ -23,7 +24,7 @@ public class MobileSDK {
     private var registrationEndpoint: String?
     private var userId: String?
     private var count = 0
-
+    private var requestCallback : AgillicRequestCallback? = nil
     public func setAuth(_ auth: Auth) {
         self.auth = auth;
     }
@@ -32,7 +33,9 @@ public class MobileSDK {
         registrationEndpoint = String(format: urlFormat, api );
     }
 
-    public init() {
+    
+    public override init() {
+        super.init()
         setAPI("");
     }
     
@@ -43,12 +46,13 @@ public class MobileSDK {
     public func setTestAPI() {
         setAPI("test");
     }
-    
+
+
     public func getTracker(_ url: String, method: SPRequestOptions, userId: String, appId: String) -> SPTracker {
         let emitter = SPEmitter.build({ (builder : SPEmitterBuilder?) -> Void in
             builder!.setUrlEndpoint(url)
             builder!.setHttpMethod(method)
-            //builder!.setCallback(self)
+            builder!.setCallback(self)
             builder!.setProtocol(self.protocolType)
             builder!.setEmitRange(500)
             builder!.setEmitThreadPoolSize(20)
@@ -154,7 +158,16 @@ public class MobileSDK {
         return String(slices.last ?? "?")
     }
 
+    public func onSuccess(withCount successCount: Int) {
+        requestCallback?.onSuccess(withCount: successCount)
+    }
+    
+    public func onFailure(withCount failureCount: Int, successCount: Int) {
+        requestCallback?.onFailure(withCount: failureCount, successCount: successCount)
+    }
 }
+
+
 
 public protocol Auth {
     func getAuthInfo() -> String

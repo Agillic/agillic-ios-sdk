@@ -3,7 +3,7 @@
 //  AgillicSDK
 //
 //  Created by Dennis Schafroth on 16/06/2020.
-//  Copyright © 2020 Dennis Schafroth. All rights reserved.
+//  Copyright © 2020 Agillic. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>

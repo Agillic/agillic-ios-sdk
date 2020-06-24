@@ -3,7 +3,7 @@
 //  SnowplowSwiftDemo
 //
 //  Created by Dennis Schafroth on 27/04/2020.
-//  Copyright © 2020 snowplowanalytics. All rights reserved.
+//  Copyright © 2020 Agillic. All rights reserved.
 //
 
 import Foundation

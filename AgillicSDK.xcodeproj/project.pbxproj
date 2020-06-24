@@ -7,31 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		950CF34424A3909A00205855 /* AgillicRequestCallback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 950CF34324A3909A00205855 /* AgillicRequestCallback.swift */; };
 		9574CB672498CAE50064717B /* AgillicSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = 9574CB652498CAE50064717B /* AgillicSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9574CB6E2498CB1C0064717B /* MobileSDK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9574CB6D2498CB1C0064717B /* MobileSDK.swift */; };
 		9574CB742498DDDA0064717B /* AgillicTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9574CB6F2498DDDA0064717B /* AgillicTracker.swift */; };
 		9574CB752498DDDA0064717B /* AgillicEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9574CB702498DDDA0064717B /* AgillicEvent.swift */; };
 		9574CB772498DDDA0064717B /* PushNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9574CB722498DDDA0064717B /* PushNotification.swift */; };
 		9574CB782498DDDA0064717B /* AppViewEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9574CB732498DDDA0064717B /* AppViewEvent.swift */; };
-		9574CB7B2498DE850064717B /* SnowplowTracker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9574CB7A2498DE840064717B /* SnowplowTracker.framework */; platformFilter = ios; };
-		9574CB7C2498DE850064717B /* SnowplowTracker.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9574CB7A2498DE840064717B /* SnowplowTracker.framework */; platformFilter = ios; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		9574CB7B2498DE850064717B /* SnowplowTracker.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9574CB7A2498DE840064717B /* SnowplowTracker.framework */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		9574CB7D2498DE850064717B /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				9574CB7C2498DE850064717B /* SnowplowTracker.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
+		950CF34324A3909A00205855 /* AgillicRequestCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgillicRequestCallback.swift; sourceTree = "<group>"; };
 		9574CB622498CAE50064717B /* AgillicSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AgillicSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9574CB652498CAE50064717B /* AgillicSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AgillicSDK.h; sourceTree = "<group>"; };
 		9574CB662498CAE50064717B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -82,6 +69,7 @@
 				9574CB652498CAE50064717B /* AgillicSDK.h */,
 				9574CB662498CAE50064717B /* Info.plist */,
 				9574CB6D2498CB1C0064717B /* MobileSDK.swift */,
+				950CF34324A3909A00205855 /* AgillicRequestCallback.swift */,
 			);
 			path = AgillicSDK;
 			sourceTree = "<group>";
@@ -116,7 +104,6 @@
 				9574CB5E2498CAE50064717B /* Sources */,
 				9574CB5F2498CAE50064717B /* Frameworks */,
 				9574CB602498CAE50064717B /* Resources */,
-				9574CB7D2498DE850064717B /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -177,6 +164,7 @@
 			files = (
 				9574CB742498DDDA0064717B /* AgillicTracker.swift in Sources */,
 				9574CB772498DDDA0064717B /* PushNotification.swift in Sources */,
+				950CF34424A3909A00205855 /* AgillicRequestCallback.swift in Sources */,
 				9574CB782498DDDA0064717B /* AppViewEvent.swift in Sources */,
 				9574CB6E2498CB1C0064717B /* MobileSDK.swift in Sources */,
 				9574CB752498DDDA0064717B /* AgillicEvent.swift in Sources */,
@@ -323,7 +311,7 @@
 				);
 				INFOPLIST_FILE = AgillicSDK/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -358,7 +346,7 @@
 				);
 				INFOPLIST_FILE = AgillicSDK/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
