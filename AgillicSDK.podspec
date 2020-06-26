@@ -29,7 +29,7 @@ An Mobile SDK for the Agillic Platform. Registration of Application installation
 
   s.swift_version = '5.0'
   s.ios.deployment_target = '10.0'
-  s.source_files = 'AgillicSDK/*'
+  s.source_files = 'AgillicSDK/*.h', 'Agillic/*.swift'
   # s.resource_bundles = {
   #   'agillic-ios-sdk' => ['agillic-ios-sdk/Assets/*.png']
   # }
