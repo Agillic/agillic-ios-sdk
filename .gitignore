@@ -1,3 +1,6 @@
 *.xcarchive
 *~
 build/
+Package.resolved
+.build/
+.swiftpm/
