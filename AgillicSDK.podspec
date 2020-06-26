@@ -24,12 +24,12 @@ An Mobile SDK for the Agillic Platform. Registration of Application installation
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'dennis-agillic' => 'dennis.schafroth@agillic.com' }
-  s.source           = { :git => 'git@gitlab.agillic.net:development-tools/agillic-ios-sdk.git', :tag => s.version.to_s }
+  s.source           = { :git => 'git@github.com:Agillic/agillic-ios-sdk.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.swift_version = '5.0'
   s.ios.deployment_target = '10.0'
-  s.source_files = 'AgillicSDK/*.h', 'Agillic/*.swift'
+  s.source_files = 'AgillicSDK/*.h', 'AgillicSDK/*.swift'
   # s.resource_bundles = {
   #   'agillic-ios-sdk' => ['agillic-ios-sdk/Assets/*.png']
   # }
