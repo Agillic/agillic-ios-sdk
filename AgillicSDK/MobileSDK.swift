@@ -39,6 +39,7 @@ public class MobileSDK : NSObject, SPRequestCallback {
         setAPI("");
     }
     
+    
     public func setDevAPI() {
         setAPI("dev");
     }
@@ -46,7 +47,37 @@ public class MobileSDK : NSObject, SPRequestCallback {
     public func setTestAPI() {
         setAPI("test");
     }
+    
+    public func setCollectorEndpoint(_ urlString: String) -> Bool{
+        guard let url = URL(string: urlString) else {
+            return false;
+        }
+        if (url.host == nil) {
+            return false;
+        }
+        if (url.scheme == "https") {
+            protocolType = .https
+        } else if (url.scheme == "http") {
+            protocolType = .http
+        }
+        else {
+            return false;
+        }
+        collectorEndpoint =
+            (url.host != nil ? url.host! : "") +
+            (url.port != nil ? ":" + String(url.port!) : "") +
+            url.path;
+        return true;
+    }
 
+    /* Default is POST but can be overrided to GET */
+    public func usePostProtocol(_ usePost: Bool) {
+        methodType = usePost == true ? .post : .get
+    }
+
+    public func setRequestCallback(_ callback: AgillicRequestCallback) {
+        requestCallback = callback;
+    }
 
     public func getTracker(_ url: String, method: SPRequestOptions, userId: String, appId: String) -> SPTracker {
         let emitter = SPEmitter.build({ (builder : SPEmitterBuilder?) -> Void in
@@ -161,13 +192,11 @@ public class MobileSDK : NSObject, SPRequestCallback {
     public func onSuccess(withCount successCount: Int) {
         requestCallback?.onSuccess(withCount: successCount)
     }
-    
+
     public func onFailure(withCount failureCount: Int, successCount: Int) {
         requestCallback?.onFailure(withCount: failureCount, successCount: successCount)
     }
 }
-
-
 
 public protocol Auth {
     func getAuthInfo() -> String
