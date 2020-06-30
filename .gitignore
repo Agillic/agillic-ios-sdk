@@ -4,3 +4,5 @@ build/
 Package.resolved
 .build/
 .swiftpm/
+Carthage/
+Cartfile.resolved
