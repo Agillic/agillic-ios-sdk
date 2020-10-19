@@ -9,6 +9,8 @@
 import Foundation
 import SnowplowTracker
 
+typealias AgillicSDKResponse = (Result<String, NSError>) -> Void
+
 public class MobileSDK : NSObject, SPRequestCallback {
     
     private let urlFormat = "https://api%@-eu1.agillic.net";
@@ -111,7 +113,8 @@ public class MobileSDK : NSObject, SPRequestCallback {
 
     public func register(clientAppId: String, clientAppVersion: String,
                   solutionId: String, userID: String,
-                  pushNotificationToken: String?) -> AgillicTracker
+                  pushNotificationToken: String?,
+                  completion: ((Result<Int, NSError>) -> Void)? ) -> AgillicTracker
     {
         self.clientAppId = clientAppId
         self.clientAppVersion = clientAppVersion
@@ -121,19 +124,23 @@ public class MobileSDK : NSObject, SPRequestCallback {
 
         tracker = getTracker(collectorEndpoint, method: methodType, userId: userID, appId: solutionId)
         let agiTracker = AgillicTracker(tracker!);
-        createMobileRegistration()
+        createMobileRegistration(completion)
         return agiTracker;
         
     }
     
-    func createMobileRegistration() {
+    func createMobileRegistration(_ completion: ((Result<Int, NSError>) -> Void)? ) {
         let fullRegistrationUrl = String(format: "%@/register/%@", self.registrationEndpoint!, self.userId!)
         guard let endpointUrl = URL(string: fullRegistrationUrl) else {
             NSLog("Failed to create registration URL %@", fullRegistrationUrl)
+            guard completion != nil else {
+                return
+            }
+            completion!(.failure(.init(domain: "registration", code: -1, userInfo: ["message" : "Bad URL"])))
             return
         }
         
-        //Make JSON to send to send to server
+        // Make JSON to send to send to server
         let json : [String:String] = ["appInstallationId": tracker!.getSessionUserId(),
                                       "clientAppId": self.clientAppId,
                                       "clientAppVersion": self.clientAppVersion,
@@ -164,12 +171,20 @@ public class MobileSDK : NSObject, SPRequestCallback {
                     NSLog("Failed to register: %@", error.localizedDescription)
                     self!.count += 1;
                     if self!.count < 3 {
-                        sleep(2000)
-                        self!.createMobileRegistration()
+                        sleep(5000)
+                        self!.createMobileRegistration(completion)
+                    } else {
+                        // Failed after three attempts
+                        if let completionHandler = completion {
+                            completionHandler(.failure(.init(domain: "registration", code: -1, userInfo: ["message" : "Failed after 3 attempt" ])));
+                        }
                     }
                 } else {
                     let response = response as? HTTPURLResponse
                     NSLog("Register: %d", response!.statusCode)
+                    if let completionHandler = completion {
+                        completionHandler(.success(.init()));
+                    }
                 }
             })
             task.resume()
