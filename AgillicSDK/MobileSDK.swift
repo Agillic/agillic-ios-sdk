@@ -183,7 +183,12 @@ public class MobileSDK : NSObject, SPRequestCallback {
                     let response = response as? HTTPURLResponse
                     NSLog("Register: %d", response!.statusCode)
                     if let completionHandler = completion {
-                        completionHandler(.success(.init()));
+                        if response!.statusCode < 400 {
+                            completionHandler(.success(.init()));
+                        }
+                        else {
+                            completionHandler(.failure(.init(domain: "registration", code: response!.statusCode, userInfo: ["message" : "Failed with error code" ])));
+                        }
                     }
                 }
             })
