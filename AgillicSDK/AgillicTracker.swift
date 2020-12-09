@@ -10,11 +10,11 @@ import Foundation
 import SnowplowTracker
 
 
-public class AgillicTracker  {
+@objcMembers public class AgillicTracker : NSObject {
     var tracker: SPTracker
     var enabled = true
 
-    public init(_ tracker: SPTracker) {
+    @objc public init(_ tracker: SPTracker) {
         self.tracker = tracker
     }
     

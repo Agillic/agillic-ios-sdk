@@ -9,7 +9,6 @@
 import Foundation
 import SnowplowTracker
 
-public class AgillicEvent {
-    public init() {}
+@objcMembers public class AgillicEvent : NSObject {
     public func track(_ spTracker: SPTracker) { }
 }

@@ -11,7 +11,7 @@ import SnowplowTracker
 
 typealias AgillicSDKResponse = (Result<String, NSError>) -> Void
 
-public class MobileSDK : NSObject, SPRequestCallback {
+@objcMembers public class MobileSDK : NSObject, SPRequestCallback {
     
     private let urlFormat = "https://api%@-eu1.agillic.net";
     private var collectorEndpoint = "snowplowtrack-eu1.agillic.net";
@@ -114,7 +114,7 @@ public class MobileSDK : NSObject, SPRequestCallback {
     public func register(clientAppId: String, clientAppVersion: String,
                   solutionId: String, userID: String,
                   pushNotificationToken: String?,
-                  completion: ((Result<Int, NSError>) -> Void)? ) -> AgillicTracker
+                  completionHandler: ((String? , Error?) -> Void)?) -> AgillicTracker
     {
         self.clientAppId = clientAppId
         self.clientAppVersion = clientAppVersion
@@ -124,19 +124,19 @@ public class MobileSDK : NSObject, SPRequestCallback {
 
         tracker = getTracker(collectorEndpoint, method: methodType, userId: userID, appId: solutionId)
         let agiTracker = AgillicTracker(tracker!);
-        createMobileRegistration(completion)
+        createMobileRegistration(completionHandler)
         return agiTracker;
         
     }
     
-    func createMobileRegistration(_ completion: ((Result<Int, NSError>) -> Void)? ) {
+    func createMobileRegistration(_ completion: ((String?, Error?) -> Void)?) {
         let fullRegistrationUrl = String(format: "%@/register/%@", self.registrationEndpoint!, self.userId!)
         guard let endpointUrl = URL(string: fullRegistrationUrl) else {
-            NSLog("Failed to create registration URL %@", fullRegistrationUrl)
+            NSLog("Failed to create registration URL %@", fullRegistrationUrl);
             guard completion != nil else {
                 return
             }
-            completion!(.failure(.init(domain: "registration", code: -1, userInfo: ["message" : "Bad URL"])))
+            completion!(nil, NSError(domain: "registration", code: -1, userInfo: ["message" : "Bad URL"]))
             return
         }
         
@@ -176,7 +176,7 @@ public class MobileSDK : NSObject, SPRequestCallback {
                     } else {
                         // Failed after three attempts
                         if let completionHandler = completion {
-                            completionHandler(.failure(.init(domain: "registration", code: -1, userInfo: ["message" : "Failed after 3 attempt" ])));
+                            completionHandler(nil, NSError(domain: "registration", code: -1, userInfo: ["message" : "Failed after 3 attempt: " + error.localizedDescription ]));
                         }
                     }
                 } else {
@@ -184,10 +184,10 @@ public class MobileSDK : NSObject, SPRequestCallback {
                     NSLog("Register: %d", response!.statusCode)
                     if let completionHandler = completion {
                         if response!.statusCode < 400 {
-                            completionHandler(.success(.init()));
+                            completionHandler("\(response!.statusCode)", nil);
                         }
                         else {
-                            completionHandler(.failure(.init(domain: "registration", code: response!.statusCode, userInfo: ["message" : "Failed with error code" ])));
+                            completionHandler(nil, NSError(domain: "registration", code: response!.statusCode, userInfo: ["message" : "Failed with error code" ]));
                         }
                     }
                 }

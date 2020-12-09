@@ -9,7 +9,7 @@
 import Foundation
 import SnowplowTracker
 
-public class PushNotification : AgillicEvent {
+@objcMembers public class PushNotification : AgillicEvent {
     var screenId: String
     var screenName: String
     var type: String?
@@ -34,7 +34,7 @@ public class PushNotification : AgillicEvent {
         return event;
     }
 
-    public func track(_ tracker: AgillicTracker) {
+    public func trackAgillic(_ tracker: AgillicTracker) {
         track(tracker.tracker)
     }
 

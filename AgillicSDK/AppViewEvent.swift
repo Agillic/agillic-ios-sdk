@@ -9,7 +9,7 @@
 import Foundation
 import SnowplowTracker
 
-public class AppViewEvent : AgillicEvent {
+@objcMembers public class AppViewEvent : AgillicEvent {
     var screenId: String
     var screenName: String
     var type: String?
