@@ -110,6 +110,16 @@ typealias AgillicSDKResponse = (Result<String, NSError>) -> Void
         return newTracker!
     }
 
+    public func register(apiKey: String, apiSecret: String,
+                         clientAppId: String, clientAppVersion: String,
+                         solutionId: String, userID: String,
+                         pushNotificationToken: String?,
+                         completionHandler: ((String? , Error?) -> Void)?) -> AgillicTracker
+    {
+        setAuth(BasicAuth(user: apiKey, password: apiSecret));
+        return register(clientAppId: clientAppId, clientAppVersion: clientAppVersion, solutionId: solutionId, userID: userID, pushNotificationToken: pushNotificationToken, completionHandler: completionHandler)
+    }
+
 
     public func register(clientAppId: String, clientAppVersion: String,
                   solutionId: String, userID: String,
@@ -218,13 +228,13 @@ typealias AgillicSDKResponse = (Result<String, NSError>) -> Void
     }
 }
 
-public protocol Auth {
-    func getAuthInfo() -> String
+@objc public protocol Auth {
+    @objc func getAuthInfo() -> String
 }
 
-public class BasicAuth : Auth {
+public class BasicAuth : NSObject, Auth {
     var authInfo: String
-    public init(user : String, password: String) {
+    @objc public init(user : String, password: String) {
         let userPw = user + ":" + password;
         authInfo = "Basic " + userPw.data(using: .utf8)!.base64EncodedString();
     }
