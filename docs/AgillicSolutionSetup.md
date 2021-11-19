@@ -55,21 +55,29 @@ The Agillic Soltion uses the ios Authentication Token to connect to Apple Push N
 - Read more [Authentication Tokens](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html#//apple_ref/doc/uid/TP40008194-CH11-SW1)
 - Go to [Member Center](https://developer.apple.com/account/ios/certificate/distribution/create)
 
-###### Create a `Key` for push notification. Download as `.p8` file.
+
+###### Create a `Key` for Push Nonotification. 
+Download as `.p8` file
 <div align = "center"><img src="resources/Key.png" width="600"/></div>
-###### Open any text editer and copy/paste the content of the `.p8` file into your `Api Secret`
+
+###### Enter into the `Api Secret` field
+Open any text editer and copy/paste the content of the `.p8` file into your `Api Secret`
 <div align = "center"><img src="resources/solutionsetup_p8.png" width="600"/></div>
 
 
 ###### Note your `Key ID`
 <div align = "center"><img src="resources/KeyId.png" width="600"/></div>
-###### Enter this in Agillic into the `Api Key`field
+
+###### Enter into the `Key ID` field
 <div align = "center"><img src="resources/solutionsetup_keyid.png" width="600"/></div>
 
 
-###### Note your `team id` on [Account Membership](https://developer.apple.com/account/#/membership)
+
+###### Note your `Team ID`
+In your [Account Membership](https://developer.apple.com/account/#/membership)
 <div align = "center"><img src="resources/TeamId.png" width="600"/></div>
-###### Enter this in Agillic into the `Api Key`field
+
+###### Enter into the `Api Key` field
 <div align = "center"><img src="resources/solutionsetup_teamid.png" width="600"/></div>
 
 
