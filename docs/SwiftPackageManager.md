@@ -42,7 +42,7 @@ Choose the Agillic SDK that you want installed in your app.
 ### Alternatively, add Agillic SDK to a `Package.swift` manifest
 
 To integrate via a `Package.swift` manifest instead of Xcode, you can add
-Firebase to the dependencies array of your package:
+Agillic SDK to the dependencies array of your package:
 
 ```swift
 dependencies: [
