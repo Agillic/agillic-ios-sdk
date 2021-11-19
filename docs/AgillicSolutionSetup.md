@@ -27,8 +27,8 @@ Click **Push and SDK** in the left sidebar to view your staging and production s
 
 Click **API** in the left sidebar to view or create a developer key and secret.
 
-Note the `Developer Key` is the `apiKey` in the Agillic SDK
-Note the `Secret` is the `apiSecret` in the Agillic SDK
+* Note the `Developer Key` is the `apiKey` in the Agillic SDK
+* Note the `Secret` is the `apiSecret` in the Agillic SDK
 
 <div align = "center"><img src="resources/solutionsetup11.png"></div>
 
