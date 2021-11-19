@@ -68,7 +68,7 @@ Open any text editer and copy/paste the content of the `.p8` file into your `Api
 ###### Note your `Key ID`
 <div align = "center"><img src="resources/KeyId.png" width="600"/></div>
 
-###### Enter into the `Key ID` field
+###### Enter into the `Api Key` field
 <div align = "center"><img src="resources/solutionsetup_keyid.png" width="600"/></div>
 
 
@@ -77,7 +77,7 @@ Open any text editer and copy/paste the content of the `.p8` file into your `Api
 In your [Account Membership](https://developer.apple.com/account/#/membership)
 <div align = "center"><img src="resources/TeamId.png" width="600"/></div>
 
-###### Enter into the `Api Key` field
+###### Enter into the `Team ID` field
 <div align = "center"><img src="resources/solutionsetup_teamid.png" width="600"/></div>
 
 
