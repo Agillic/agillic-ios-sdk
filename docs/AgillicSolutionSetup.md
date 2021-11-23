@@ -56,21 +56,24 @@ The Agillic Soltion uses the ios Authentication Token to connect to Apple Push N
 - Go to [Member Center](https://developer.apple.com/account/ios/certificate/distribution/create)
 
 
-###### Create a `Key` for Push Nonotification. 
-Download as `.p8` file
-<div align = "center"><img src="resources/Key.png" width="600"/></div>
+* Create a `Key` for Push Nonotification and Download as `.p8` file.
+* Open any text editer and copy/paste the content of the `.p8` file into your `Api Secret`
+<table>
+  <tr>
+    <td><img src="resources/Key.png" /></td>
+    <td><img src="resources/solutionsetup_p8.png"/>
+  </td>
+  </tr>
+</table>
 
-###### Enter into the `Api Secret` field
-Open any text editer and copy/paste the content of the `.p8` file into your `Api Secret`
-<div align = "center"><img src="resources/solutionsetup_p8.png" width="600"/></div>
-
-
-###### Note your `Key ID`
-<div align = "center"><img src="resources/KeyId.png" width="600"/></div>
-
-###### Enter into the `Api Key` field
-<div align = "center"><img src="resources/solutionsetup_keyid.png" width="600"/></div>
-
+* Note your `Key ID` and Enter into the `Api Key` field
+<table>
+  <tr>
+    <td><img src="resources/KeyId.png" /></td>
+    <td><img src="resources/solutionsetup_keyid.png"/>
+  </td>
+  </tr>
+</table>
 
 
 * Note your `Team ID` In your [Account Membership](https://developer.apple.com/account/#/membership) and Enter into the `Team ID` field
