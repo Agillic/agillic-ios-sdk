@@ -55,7 +55,7 @@ The Agillic Soltion uses the ios Authentication Token to connect to Apple Push N
 - Read more [Authentication Tokens](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html#//apple_ref/doc/uid/TP40008194-CH11-SW1)
 - Go to [Member Center](https://developer.apple.com/account/ios/certificate/distribution/create)
 
-## Enter credentials into you Agillic Solution
+### Enter credentials into you Agillic Solution
 
 * Create a `Key` for Push Nonotification and Download as `.p8` file.
 * Open any text editer and copy/paste the content of the `.p8` file into your `Api Secret`
@@ -88,4 +88,4 @@ The Agillic Soltion uses the ios Authentication Token to connect to Apple Push N
 
 
 
-Now your are good to go!
+**Now you're are good to go!**
