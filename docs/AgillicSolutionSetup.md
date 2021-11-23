@@ -73,10 +73,9 @@ Open any text editer and copy/paste the content of the `.p8` file into your `Api
 
 
 
-###### Note your `Team ID`
-###### Enter into the `Team ID` field
-In your [Account Membership](https://developer.apple.com/account/#/membership)
-<div align = "center"><img src="resources/TeamId.png" width="50%"/></div><div align = "center"><img src="resources/solutionsetup_teamid.png" width="50%"/></div>
+* Note your `Team ID` In your [Account Membership](https://developer.apple.com/account/#/membership) and Enter into the `Team ID` field
+
+<div align = "center"><img src="resources/TeamId.png" width="40%"/></div><div align = "center"><img src="resources/solutionsetup_teamid.png" width="40%"/></div>
 
 
 
