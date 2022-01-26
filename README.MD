@@ -156,7 +156,7 @@ Add the Agillic SDK to your extension as shown in the image below
 **Configure your Notification Service Extension for Agillic**
 
 Finally, navigate to your extension, open `NotificationService.swift` and call the Agillic functions for processing notifications and handling timeouts.
-
+```swift
 	import Foundation
 	import UserNotifications
 	import AgillicSDK
@@ -172,6 +172,7 @@ Finally, navigate to your extension, open `NotificationService.swift` and call t
 	    }
 	    
 	}
+```
 
 ***Voilà!***
 
