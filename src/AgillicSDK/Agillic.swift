@@ -112,6 +112,22 @@ public class Agillic : NSObject, SPRequestCallback {
         self.track(pushEvent)
     }
 
+    /// Handles mutable notifications
+    /// This method will look for the `image` key in the notification payload and try to download and attach the image to the notification content
+    public func handleNotificationRequest(_ request: UNNotificationRequest, contentHandler: @escaping (UNNotificationContent) -> Void) {
+
+        guard self.isAgillicNotification(userInfo: request.content.userInfo) else {
+            self.logger.log("Skipping non-Agillic notification", level: .verbose)
+            return
+        }
+
+        self.notificationService.process(request: request, contentHandler: contentHandler)
+    }
+
+    public func serviceExtensionTimeWillExpire() {
+        self.notificationService.serviceExtensionTimeWillExpire()
+    }
+
     /// Validates it push notification opened - is a Agillic Push Notifcation based on payload
     private func getAgillicPushId(userInfo: [AnyHashable: Any]) -> String? {
         guard let userInfo = userInfo as? [String: AnyObject],
