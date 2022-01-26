@@ -135,6 +135,53 @@ func application(_ application: UIApplication, didRegisterForRemoteNotifications
 
 _NOTE: Work in progress_
 
+## Rich push notifications
+### Image attachments
+
+For your iOS application to be able to show notifications with an image attached, you need to create a `Notification Service Extension` which will modify the content of a remote notification before it’s delivered to the user.
+
+**To create the extension:**
+
+1. Select `File/New/Target` in the Xcode menu bar.
+2. Search for `notification` in the filter field.
+3. Select `Notification Service Extension`
+4. Give it a suitable name and make sure that the `Project` and `Embed in Application` field is set to your main app.
+
+**Dependency configuration**
+
+Add the Agillic SDK to your extension as shown in the image below
+
+<a href="https://ibb.co/LhLncWJ"><img src="https://i.ibb.co/XkhSKg3/Screenshot-2022-01-26-at-14-36-08.png" alt="Screenshot-2022-01-26-at-14-36-08" border="0"></a>
+
+**Configure your Notification Service Extension for Agillic**
+
+Finally, navigate to your extension, open `NotificationService.swift` and call the Agillic functions for processing notifications and handling timeouts.
+
+	import Foundation
+	import UserNotifications
+	import AgillicSDK
+	
+	class NotificationService: UNNotificationServiceExtension {
+	
+	    override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
+	        Agillic.shared.handleNotificationRequest(request, contentHandler: contentHandler)
+	    }
+	
+	    override func serviceExtensionTimeWillExpire() {
+	        Agillic.shared.serviceExtensionTimeWillExpire()
+	    }
+	    
+	}
+
+***Voilà!***
+
+Your app is now able handle Agillic notifications with an image attached!
+
+
+### Custom actions
+_NOTE: Work in progress_
+
+
 ## Reading Push Notification sent from your Agillic
 
 _NOTE: Work in progress_
