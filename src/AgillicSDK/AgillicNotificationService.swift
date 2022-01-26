@@ -8,7 +8,7 @@
 import Foundation
 import UserNotifications
 
-class AgillicNotificationService {
+internal class AgillicNotificationService {
     var request: UNNotificationRequest?
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
@@ -56,7 +56,7 @@ class AgillicNotificationService {
     }
 }
 
-extension UNNotificationRequest {
+internal extension UNNotificationRequest {
     var attachment: UNNotificationAttachment? {
         guard let attachmentURL = content.userInfo["image"] as? String, let imageData = try? Data(contentsOf: URL(string: attachmentURL)!) else {
             return nil
@@ -65,7 +65,7 @@ extension UNNotificationRequest {
     }
 }
 
-extension UNNotificationAttachment {
+internal extension UNNotificationAttachment {
 
     convenience init(data: Data, options: [NSObject: AnyObject]?) throws {
         let fileManager = FileManager.default
