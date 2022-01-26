@@ -58,11 +58,13 @@ in the [Agillic Solution Setup Guide](docs/AgillicSolutionSetup.md).
 ### Initialize in app
 
 Start by importing the AgillicSDK Module into your `AppDelegate.swift` file
+
 ```swift
 import AgillicSDK
 ```
 
 Initialize and configure the Agillic SDK upon launch
+
 ```swift
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
@@ -101,6 +103,7 @@ Agillic.shared.register(recipientId: "RECIPIENT ID")
 * Read the [Agillic Push Notification Setup](docs/AgillicPushNotificationSetup.md) document to learn how to send Push Potifications to your iOS application directly from your Agillic Solution.
 
 * Request permission for Remote Push Notifications in your App and obtain the Push Token from APNS
+
 _NOTE: This requires you to have already obtained the Recipient ID and that you store this across app sessions - this is currently only supported for unknown recipients._
 
 ```swift
@@ -121,6 +124,7 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
 
 ###### Register App Installation
 Read `deviceToken` and add it to your Agillic Recipient.
+
 ```swift
 func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
     
@@ -135,23 +139,7 @@ func application(_ application: UIApplication, didRegisterForRemoteNotifications
 
 ### Track Push Opened 
 
-The SDK can be used to track if a recipient has opened a push notification sent from Agillic. There are to ways to track this:
-
-1. Track if the app was launched by opening an Agillic push notification. To do this, simply add the following to your `AppDelegate.swift`
-
-```swift
-func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-
-	/* ... app configuration code ... */
-
-	Agillic.shared.handlePushNotificationOpened(launchOptions: launchOptions)
-
-	return true
-}
-```
-
-
-2. Track if an agillic push notification was opened while the app was open or in the background. To do this, conform your `AppDelegate` class to `UNUserNotificationCenterDelegate` and implement the following function
+The SDK can be used to track if a recipient has opened a push notification sent from Agillic. To do this, conform your `AppDelegate` class to `UNUserNotificationCenterDelegate` and implement the following function
 
 ```swift
 extension AppDelegate: UNUserNotificationCenterDelegate {
@@ -187,16 +175,10 @@ If you want the App to deeplink to a specific screen / page / product in your ap
 extension AppDelegate: UNUserNotificationCenterDelegate {
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        // ex: onClickAction = "app://product-offers/21
-        if let onClickAction = response.notification.request.content.userInfo["on_click"] as? String {
-            switch onClickAction {
-                case let str where str.contains("product-offer"):
-                    //Get product-offers ID from String (21 in this example)
-                    let productOfferId = onClickAction.components(separatedBy: .decimalDigits.inverted).joined()
-                    //Navigate to ViewController and pass an ID if needed
-                default: break
-            }
-        }
+        // ex: on_click = "app://product-offers/21
+        if let deeplink = response.notification.request.content.userInfo["on_click"] as? String {
+        	//Handle your deeplinking here
+     	}   
     }
 }
 ```
@@ -204,7 +186,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 ## Rich push notifications
 ### Image attachments
 
-For your iOS application to be able to show notifications with an image attached, you need to create a `Notification Service Extension` which will modify the content of a remote notification before it’s delivered to the user.
+For your iOS application to be able to show notifications with an image attached, you need to create a `Notification Service Extension` which will modify the content of a remote notification before it’s delivered to the recipient.
 
 **To create the extension:**
 
@@ -219,9 +201,10 @@ Add the Agillic SDK to your extension as shown in the image below
 
 <a href="https://ibb.co/LhLncWJ"><img src="https://i.ibb.co/XkhSKg3/Screenshot-2022-01-26-at-14-36-08.png" alt="Screenshot-2022-01-26-at-14-36-08" border="0"></a>
 
-**Configure your Notification Service Extension for Agillic**
+**Configure your Notification Service Extension**
 
 Finally, navigate to your extension, open `NotificationService.swift` and call the Agillic functions for processing notifications and handling timeouts.
+
 ```swift
 import Foundation
 import UserNotifications
@@ -242,7 +225,7 @@ class NotificationService: UNNotificationServiceExtension {
 
 ***Voilà!***
 
-Your app is now able handle Agillic notifications with an image attached!
+Your app is now able to show the attached image in an Agillic notification!
 
 
 ### Custom Actions
