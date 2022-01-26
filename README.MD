@@ -135,9 +135,42 @@ func application(_ application: UIApplication, didRegisterForRemoteNotifications
 
 ### Track Push Opened 
 
-_NOTE: Work in progress_
+The SDK can be used to track if a user has opened a push notification sent from Agillic. There are to ways to track this:
+
+1. Track if the app was launched by opening an Agillic push notification. To do this, simply add the following to your `AppDelegate.swift`
+
 ```swift
-   Agillic.shared.handlePushNotificationOpened()
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+
+	Agillic.shared.handlePushNotificationOpened(launchOptions: launchOptions)
+
+	return true
+}
+```
+
+
+2. Track if an agillic push notification was opened while the app was open or in the background. To do this, conform your `AppDelegate` class to `UNUserNotificationCenterDelegate` and implement the following function
+
+```swift
+extension AppDelegate: UNUserNotificationCenterDelegate {
+
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+
+        Agillic.shared.handlePushNotificationOpened(userInfo: response.notification.request.content.userInfo)
+
+        completionHandler()
+    }
+}
+```
+
+_NOTE: By default, your app wont show notifications if the app is in foreground. If you want to support this, add the following function_
+
+```swift
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.banner, .sound, .badge])
+    }
+}
 ```
 
 ## Handling deeplinking from Agillic
@@ -146,9 +179,9 @@ By default, when a recipient clicks on your app push message, the app opens.
 If you want the App to deeplink to a specific screen / page / product in your app. You can use this variable that is passed from the Agillic Solution.
 
 _NOTE: Work in progress_
+
 ```swift
    let onClickAction = ... // ex: "app://product-offers/21"
-	
 ```
 
 ## Rich push notifications
@@ -193,6 +226,7 @@ class NotificationService: UNNotificationServiceExtension {
 ***Voilà!***
 
 Your app is now able handle Agillic notifications with an image attached!
+
 
 ### Custom Actions
 Not yet supported.

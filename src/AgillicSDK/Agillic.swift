@@ -113,6 +113,13 @@ public class Agillic : NSObject, SPRequestCallback {
         self.track(pushEvent)
     }
 
+    /// Check and track if the app was launched from a notification
+    public func handlePushNotificationOpened(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
+        // Check if launched from notification
+        guard let notification = launchOptions?[UIApplication.LaunchOptionsKey.remoteNotification], let userInfo = notification as? [String: AnyObject] else { return }
+        self.handlePushNotificationOpened(userInfo: userInfo)
+    }
+
     /// Handles mutable notifications
     /// This method will look for the `image` key in the notification payload and try to download and attach the image to the notification content
     public func handleNotificationRequest(_ request: UNNotificationRequest, contentHandler: @escaping (UNNotificationContent) -> Void) {
