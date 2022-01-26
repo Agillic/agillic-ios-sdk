@@ -190,7 +190,7 @@ _NOTE: Work in progress_
 
 _NOTE: Work in progress_
 
-### App View Tracking
+## App View Tracking
 
 Track recipient behavior with App View Tracking.
 
