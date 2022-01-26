@@ -157,21 +157,21 @@ Add the Agillic SDK to your extension as shown in the image below
 
 Finally, navigate to your extension, open `NotificationService.swift` and call the Agillic functions for processing notifications and handling timeouts.
 ```swift
-	import Foundation
-	import UserNotifications
-	import AgillicSDK
-	
-	class NotificationService: UNNotificationServiceExtension {
-	
-	    override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
-	        Agillic.shared.handleNotificationRequest(request, contentHandler: contentHandler)
-	    }
-	
-	    override func serviceExtensionTimeWillExpire() {
-	        Agillic.shared.serviceExtensionTimeWillExpire()
-	    }
-	    
-	}
+import Foundation
+import UserNotifications
+import AgillicSDK
+
+class NotificationService: UNNotificationServiceExtension {
+
+    override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
+	Agillic.shared.handleNotificationRequest(request, contentHandler: contentHandler)
+    }
+
+    override func serviceExtensionTimeWillExpire() {
+	Agillic.shared.serviceExtensionTimeWillExpire()
+    }
+
+}
 ```
 
 ***Voilà!***
