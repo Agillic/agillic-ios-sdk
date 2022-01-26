@@ -135,12 +135,14 @@ func application(_ application: UIApplication, didRegisterForRemoteNotifications
 
 ### Track Push Opened 
 
-The SDK can be used to track if a user has opened a push notification sent from Agillic. There are to ways to track this:
+The SDK can be used to track if a recipient has opened a push notification sent from Agillic. There are to ways to track this:
 
 1. Track if the app was launched by opening an Agillic push notification. To do this, simply add the following to your `AppDelegate.swift`
 
 ```swift
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+
+	/* ... app configuration code ... */
 
 	Agillic.shared.handlePushNotificationOpened(launchOptions: launchOptions)
 
@@ -176,12 +178,27 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 ## Handling deeplinking from Agillic
 
 By default, when a recipient clicks on your app push message, the app opens.
-If you want the App to deeplink to a specific screen / page / product in your app. You can use this variable that is passed from the Agillic Solution.
+If you want the App to deeplink to a specific screen / page / product in your app. You can use the `on_click` variable that is passed from the Agillic Solution.
 
-_NOTE: Work in progress_
+**Example**
+
 
 ```swift
-   let onClickAction = ... // ex: "app://product-offers/21"
+extension AppDelegate: UNUserNotificationCenterDelegate {
+
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        // ex: onClickAction = "app://product-offers/21
+        if let onClickAction = response.notification.request.content.userInfo["on_click"] as? String {
+            switch onClickAction {
+                case let str where str.contains("product-offer"):
+                    //Get product-offers ID from String (21 in this example)
+                    let productOfferId = onClickAction.components(separatedBy: .decimalDigits.inverted).joined()
+                    //Navigate to ViewController and pass an ID if needed
+                default: break
+            }
+        }
+    }
+}
 ```
 
 ## Rich push notifications
