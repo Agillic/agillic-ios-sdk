@@ -132,8 +132,7 @@ public class Agillic : NSObject, SPRequestCallback {
     /// Validates it push notification opened - is a Agillic Push Notifcation based on payload
     private func getAgillicPushId(userInfo: [AnyHashable: Any]) -> String? {
         guard let userInfo = userInfo as? [String: AnyObject],
-            let aps = userInfo["aps"] as? [String: AnyObject],
-            let agillic_push_id = aps["agillic_push_id"] as? String else {
+            let agillic_push_id = userInfo["agillic_push_id"] as? String else {
             return nil
         }
         return agillic_push_id
