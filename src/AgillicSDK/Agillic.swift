@@ -23,6 +23,7 @@ public class Agillic : NSObject, SPRequestCallback {
     private var recipientId: String?
     private var count = 0
     private var requestCallback : AgillicRequestCallback? = nil
+    private let notificationService = AgillicNotificationService()
     public let logger = AgillicLogger()
     
     // MARK: - Initializer & Usage methods
