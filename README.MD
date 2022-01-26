@@ -131,9 +131,25 @@ func application(_ application: UIApplication, didRegisterForRemoteNotifications
 }
 ```
 
+## Reading Push Notification sent from your Agillic
+
 ### Track Push Opened 
 
 _NOTE: Work in progress_
+```swift
+   Agillic.shared.handlePushNotificationOpened()
+```
+
+## Handling deeplinking from Agillic
+
+By default, when a recipient clicks on your app push message, the app opens.
+If you want the App to deeplink to a specific screen / page / product in your app. You can use this variable that is passed from the Agillic Solution.
+
+_NOTE: Work in progress_
+```swift
+   let onClickAction = ... // ex: "app://product-offers/21"
+	
+```
 
 ## Rich push notifications
 ### Image attachments
@@ -178,20 +194,10 @@ class NotificationService: UNNotificationServiceExtension {
 
 Your app is now able handle Agillic notifications with an image attached!
 
+### Custom Actions
+Not yet supported.
 
-### Custom actions
-_NOTE: Work in progress_
-
-
-## Reading Push Notification sent from your Agillic
-
-_NOTE: Work in progress_
-
-## Handling deeplinking from Agillic
-
-_NOTE: Work in progress_
-
-### App View Tracking
+## App View Tracking
 
 Track recipient behavior with App View Tracking.
 
@@ -216,8 +222,6 @@ We suggest to use a hierarchical naming convention, prefixed with `app://` ex:
 * ``app://product-offers``
 * ``app://product-offers/21``
 * ``app://menu/profile/edit``
-
-_TODO: Usage in combination with 'Deeplinking' and 'Dynamic Links'_
 
 ## Questions and Issues
 
