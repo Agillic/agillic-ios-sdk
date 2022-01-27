@@ -45,7 +45,7 @@ _NOTE: This is not the recommended method._
 
 ## Initializing the Agillic SDK
 
-In order to use AgillicSDK you have to initialize and configure it first.
+In order to use SDK you have to initialize and configure it first.
 
 You can configure your Agillic instance in code:
 * ``AGILLIC API KEY``
@@ -55,7 +55,7 @@ You can configure your Agillic instance in code:
 See how to setup your Agillic Solution and obtain these values
 in the [Agillic Solution Setup Guide](docs/AgillicSolutionSetup.md).
 
-### Initialize in app
+### Initialization
 
 Start by importing the AgillicSDK Module into your `AppDelegate.swift` file
 
