@@ -23,13 +23,15 @@ internal class AgillicPushNotification : AgillicTrackingEvent {
     
     func getSPEvent() -> SPPushNotification? {
         let event = SPPushNotification.build({(builder : SPPushNotificationBuilder?) -> Void in
-            builder!.setTrigger("PUSH") // can be "PUSH", "LOCATION", "CALENDAR", or "TIME_INTERVAL"
-            builder!.setAction("action")
-            builder!.setDeliveryDate("date")
-            builder!.setCategoryIdentifier("category")
-            builder!.setThreadIdentifier("thread")
+            if let builder = builder {
+                builder.setTrigger("PUSH") // can be "PUSH", "LOCATION", "CALENDAR", or "TIME_INTERVAL"
+                builder.setAction("action")
+                builder.setDeliveryDate("date")
+                builder.setCategoryIdentifier("category")
+                builder.setThreadIdentifier("thread")
+            }
         })
-        return event;
+        return event
     }
     
     public override func track(_ tracker: SPTracker) {

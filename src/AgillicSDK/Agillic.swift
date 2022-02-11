@@ -70,9 +70,7 @@ public class Agillic : NSObject, SPRequestCallback {
      
      Anonymous Registaions are not yet supported.
      */
-    public func register(recipientId: String,
-                  pushNotificationToken: String? = nil,
-                  completionHandler: ((String? , Error?) -> Void)? = nil)
+    public func register(recipientId: String, pushNotificationToken: String? = nil, completionHandler: ((String? , Error?) -> Void)? = nil)
     {
         self.recipientId = recipientId
         self.pushNotificationToken = pushNotificationToken
@@ -87,7 +85,19 @@ public class Agillic : NSObject, SPRequestCallback {
 
         let spTracker = getTracker(recipientId: recipientId, solutionId: solutionId)
         self.tracker = AgillicTracker(spTracker);
-        createMobileRegistration(completionHandler)
+        self.createMobileRegistration(inRegisterMode: true, recipientId: recipientId, completionHandler)
+    }
+
+    public func unregister(recipientId: String, completionHandler: ((String? , Error?) -> Void)? = nil) {
+        guard let solutionId = self.solutionId else {
+            let errorMsg = "Configuration not set"
+            let error = NSError(domain: "configuration error", code: 1001, userInfo: ["message" : errorMsg])
+            self.logger.log(errorMsg, level: .error)
+            completionHandler?(nil, error)
+            return
+        }
+
+        self.createMobileRegistration(inRegisterMode: false, recipientId: recipientId, completionHandler)
     }
     
     
@@ -148,34 +158,38 @@ public class Agillic : NSObject, SPRequestCallback {
 
     private func getTracker(recipientId: String, solutionId: String) -> SPTracker {
         let emitter = SPEmitter.build({ (builder : SPEmitterBuilder?) -> Void in
-            builder!.setUrlEndpoint(self.snowplowEndpoint)
-            builder!.setHttpMethod(SPRequestOptions.post)
-            builder!.setCallback(self)
-            builder!.setProtocol(SPProtocol.https)
-            builder!.setEmitRange(500)
-            builder!.setEmitThreadPoolSize(20)
-            builder!.setByteLimitPost(52000)
+            if let builder = builder {
+                builder.setUrlEndpoint(self.snowplowEndpoint)
+                builder.setHttpMethod(SPRequestOptions.post)
+                builder.setCallback(self)
+                builder.setProtocol(SPProtocol.https)
+                builder.setEmitRange(500)
+                builder.setEmitThreadPoolSize(20)
+                builder.setByteLimitPost(52000)
+            }
         })
         let subject = SPSubject(platformContext: true, andGeoContext: true)
         subject!.setUserId(recipientId)
         let newTracker = SPTracker.build({ (builder : SPTrackerBuilder?) -> Void in
-            builder!.setEmitter(emitter)
-            builder!.setAppId(solutionId)
-            builder!.setBase64Encoded(false)
-            builder!.setSessionContext(true)
-            builder!.setSubject(subject)
-            builder!.setLifecycleEvents(true)
-            builder!.setAutotrackScreenViews(true)
-            builder!.setScreenContext(true)
-            builder!.setApplicationContext(true)
-            builder!.setExceptionEvents(true)
-            builder!.setInstallEvent(true)
+            if let builder = builder {
+                builder.setEmitter(emitter)
+                builder.setAppId(solutionId)
+                builder.setBase64Encoded(false)
+                builder.setSessionContext(true)
+                builder.setSubject(subject)
+                builder.setLifecycleEvents(true)
+                builder.setAutotrackScreenViews(true)
+                builder.setScreenContext(true)
+                builder.setApplicationContext(true)
+                builder.setExceptionEvents(true)
+                builder.setInstallEvent(true)
+            }
         })
         return newTracker!
     }
     
-    private func createMobileRegistration(_ completion: ((String?, Error?) -> Void)?) {
-        let fullRegistrationUrl = String(format: "%@/register/%@", self.registrationEndpoint, self.recipientId!)
+    private func createMobileRegistration(inRegisterMode: Bool, recipientId: String, _ completion: ((String?, Error?) -> Void)?) {
+        let fullRegistrationUrl = inRegisterMode ? String(format: "%@/register/%@", self.registrationEndpoint, recipientId) : String(format: "%@/unregister/%@", self.registrationEndpoint, recipientId)
         guard let endpointUrl = URL(string: fullRegistrationUrl) else {
             let errorMsg = "Failed to create registration \(fullRegistrationUrl)"
             let error = NSError(domain: "registration", code: -1, userInfo: ["message" : errorMsg])
@@ -188,12 +202,12 @@ public class Agillic : NSObject, SPRequestCallback {
             let errorMsg = "configuration not set"
             let error = NSError(domain: "configuration error", code: -1, userInfo: ["message" : errorMsg])
             self.logger.log(errorMsg, level: .error)
-            completion!(nil, error)
+            completion?(nil, error)
             return
         }
         
         guard let tracker = self.tracker else {
-            let errorMsg = "tracker not configrued"
+            let errorMsg = "tracker not configured"
             let error = NSError(domain: "tracker", code: -1, userInfo: ["message" : errorMsg])
             self.logger.log(errorMsg, level: .error)
             completion?(nil, error)
@@ -208,11 +222,14 @@ public class Agillic : NSObject, SPRequestCallback {
             "clientAppVersion": clientAppVersion,
             "osName" : SPUtilities.getOSType(),
             "osVersion" : SPUtilities.getOSVersion(),
-            "pushNotificationToken" : self.pushNotificationToken ?? "",
             "deviceModel": SPUtilities.getDeviceModel(),
             "modelDimX" :  getXDimension(SPUtilities.getResolution()),
             "modelDimY" :  getYDimension(SPUtilities.getResolution())
         ]
+        if inRegisterMode {
+            json["pushNotificationToken"] = self.pushNotificationToken ?? ""
+        }
+
         do {
             let data = try JSONSerialization.data(withJSONObject: json, options: [])
             // Convert to a string and print
@@ -229,33 +246,46 @@ public class Agillic : NSObject, SPRequestCallback {
             request.addValue(authorization, forHTTPHeaderField: "Authorization")
 
             let task = URLSession.shared.dataTask(with: request, completionHandler: { [weak self] data, response, error in
+                guard let self = self else {
+                    let error = NSError(domain: "registration", code: 3001, userInfo: ["message" : "Lost reference to the Agillic SDK"])
+                    DispatchQueue.main.async {
+                        completion?(nil, error)
+                    }
+                    return
+                }
                 if let error = error {
-                    self?.logger.log("Failed to register: \(error.localizedDescription)", level: .error)
-                    self?.count += 1;
-                    if self!.count < 3 {
+                    self.logger.log("Failed to register: \(error.localizedDescription)", level: .error)
+                    self.count += 1;
+                    if self.count < 3 {
                         // Make 3 attempts
                         sleep(5000)
-                        self?.createMobileRegistration(completion)
+                        self.createMobileRegistration(inRegisterMode: inRegisterMode, completion)
                     } else {
                         // Failed after three attempts
                         let errorMsg =  "Failed after 3 attempt: " + error.localizedDescription
                         let error = NSError(domain: "registration", code: 3001, userInfo: ["message" : errorMsg])
-                        self?.logger.log(errorMsg, level: .error)
-                        self?.count = 0
-                        completion?(nil, error)
+                        self.logger.log(errorMsg, level: .error)
+                        self.count = 0
+                        DispatchQueue.main.async {
+                            completion?(nil, error)
+                        }
                     }
                 } else {
-                    let response = response as? HTTPURLResponse
-                    if response!.statusCode < 400 {
-                        let message = "Register success response code: \(response!.statusCode)"
-                        self?.logger.log(message, level: .debug)
-                        completion?(message, nil)
+                    let response = response as! HTTPURLResponse
+                    if response.statusCode < 400 {
+                        let message = "Register success response code: \(response.statusCode)"
+                        self.logger.log(message, level: .debug)
+                        DispatchQueue.main.async {
+                            completion?(message, nil)
+                        }
                     }
                     else {
-                        let errorMsg = "Register failed with error code: \(response!.statusCode)"
+                        let errorMsg = "Register failed with error code: \(response.statusCode)"
                         let error = NSError(domain: "registration", code: -1, userInfo: ["message" : errorMsg])
                         self?.logger.log(errorMsg, level: .error)
-                        completion?(nil, error)
+                        DispatchQueue.main.async {
+                            completion?(nil, error)
+                        }
                     }
                 }
             })

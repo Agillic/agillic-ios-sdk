@@ -23,12 +23,14 @@ public class AgillicAppView: AgillicTrackingEvent {
     
     private func buildSPEvent() -> SPScreenView? {
         let event = SPScreenView.build({ (builder : SPScreenViewBuilder?) -> Void in
-            builder!.setName(self.screenName)
-            builder!.setScreenId(self.screenId)
-            builder!.setType(self.type)
-            builder!.setPreviousScreenId(self.previousScreenId)
+            if let builder = builder {
+                builder.setName(self.screenName)
+                builder.setScreenId(self.screenId)
+                builder.setType(self.type)
+                builder.setPreviousScreenId(self.previousScreenId)
+            }
         })
-        return event;
+        return event
     }
 
     public override func track(_ tracker: SPTracker) {
