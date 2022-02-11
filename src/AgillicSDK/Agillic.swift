@@ -215,7 +215,7 @@ public class Agillic : NSObject, SPRequestCallback {
         }
 
         // Make JSON to send to send to server
-        let json : [String:String] =
+        var json : [String:String] =
         [
             "appInstallationId": tracker.getSPTracker().getSessionUserId(),
             "clientAppId": clientAppId,
@@ -259,7 +259,7 @@ public class Agillic : NSObject, SPRequestCallback {
                     if self.count < 3 {
                         // Make 3 attempts
                         sleep(5000)
-                        self.createMobileRegistration(inRegisterMode: inRegisterMode, completion)
+                        self.createMobileRegistration(inRegisterMode: inRegisterMode, recipientId: recipientId, completion)
                     } else {
                         // Failed after three attempts
                         let errorMsg =  "Failed after 3 attempt: " + error.localizedDescription
@@ -282,7 +282,7 @@ public class Agillic : NSObject, SPRequestCallback {
                     else {
                         let errorMsg = "Register failed with error code: \(response.statusCode)"
                         let error = NSError(domain: "registration", code: -1, userInfo: ["message" : errorMsg])
-                        self?.logger.log(errorMsg, level: .error)
+                        self.logger.log(errorMsg, level: .error)
                         DispatchQueue.main.async {
                             completion?(nil, error)
                         }
