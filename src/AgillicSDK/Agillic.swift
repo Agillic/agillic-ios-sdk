@@ -189,10 +189,13 @@ public class Agillic : NSObject, SPRequestCallback {
     }
     
     private func createMobileRegistration(inRegisterMode: Bool, recipientId: String, _ completion: ((String?, Error?) -> Void)?) {
+
+        let registrationModeString = inRegisterMode ? "registration" : "unregistration"
+
         let fullRegistrationUrl = inRegisterMode ? String(format: "%@/register/%@", self.registrationEndpoint, recipientId) : String(format: "%@/unregister/%@", self.registrationEndpoint, recipientId)
         guard let endpointUrl = URL(string: fullRegistrationUrl) else {
-            let errorMsg = "Failed to create registration \(fullRegistrationUrl)"
-            let error = NSError(domain: "registration", code: -1, userInfo: ["message" : errorMsg])
+            let errorMsg = "Failed to create \(registrationModeString) \(fullRegistrationUrl)"
+            let error = NSError(domain: "\(registrationModeString)", code: -1, userInfo: ["message" : errorMsg])
             self.logger.log(errorMsg, level: .error)
             completion?(nil, error)
             return
@@ -234,7 +237,7 @@ public class Agillic : NSObject, SPRequestCallback {
             let data = try JSONSerialization.data(withJSONObject: json, options: [])
             // Convert to a string and print
             if let JSONString = String(data: data, encoding: String.Encoding.utf8) {
-                self.logger.log("Registration JSON: \(JSONString)", level: .debug)
+                self.logger.log("\(registrationModeString.capitalized) JSON: \(JSONString)", level: .debug)
             }
     
             var request = URLRequest(url: endpointUrl)
@@ -247,14 +250,14 @@ public class Agillic : NSObject, SPRequestCallback {
 
             let task = URLSession.shared.dataTask(with: request, completionHandler: { [weak self] data, response, error in
                 guard let self = self else {
-                    let error = NSError(domain: "registration", code: 3001, userInfo: ["message" : "Lost reference to the Agillic SDK"])
+                    let error = NSError(domain: "\(registrationModeString)", code: 3001, userInfo: ["message" : "Lost reference to the Agillic SDK"])
                     DispatchQueue.main.async {
                         completion?(nil, error)
                     }
                     return
                 }
                 if let error = error {
-                    self.logger.log("Failed to register: \(error.localizedDescription)", level: .error)
+                    self.logger.log("Failed \(registrationModeString): \(error.localizedDescription)", level: .error)
                     self.count += 1;
                     if self.count < 3 {
                         // Make 3 attempts
@@ -263,7 +266,7 @@ public class Agillic : NSObject, SPRequestCallback {
                     } else {
                         // Failed after three attempts
                         let errorMsg =  "Failed after 3 attempt: " + error.localizedDescription
-                        let error = NSError(domain: "registration", code: 3001, userInfo: ["message" : errorMsg])
+                        let error = NSError(domain: "\(registrationModeString)", code: 3001, userInfo: ["message" : errorMsg])
                         self.logger.log(errorMsg, level: .error)
                         self.count = 0
                         DispatchQueue.main.async {
@@ -273,15 +276,15 @@ public class Agillic : NSObject, SPRequestCallback {
                 } else {
                     let response = response as! HTTPURLResponse
                     if response.statusCode < 400 {
-                        let message = "Register success response code: \(response.statusCode)"
+                        let message = "\(registrationModeString.capitalized) success response code: \(response.statusCode)"
                         self.logger.log(message, level: .debug)
                         DispatchQueue.main.async {
                             completion?(message, nil)
                         }
                     }
                     else {
-                        let errorMsg = "Register failed with error code: \(response.statusCode)"
-                        let error = NSError(domain: "registration", code: -1, userInfo: ["message" : errorMsg])
+                        let errorMsg = "\(registrationModeString.capitalized) failed with error code: \(response.statusCode)"
+                        let error = NSError(domain: "\(registrationModeString)", code: -1, userInfo: ["message" : errorMsg])
                         self.logger.log(errorMsg, level: .error)
                         DispatchQueue.main.async {
                             completion?(nil, error)
@@ -290,9 +293,9 @@ public class Agillic : NSObject, SPRequestCallback {
                 }
             })
             task.resume()
-            self.logger.log("Registration sent", level: .debug)
+            self.logger.log("\(registrationModeString.capitalized) sent", level: .debug)
         } catch{
-            self.logger.log("Registration exception", level: .debug)
+            self.logger.log("\(registrationModeString.capitalized) exception", level: .debug)
         }
     }
     
