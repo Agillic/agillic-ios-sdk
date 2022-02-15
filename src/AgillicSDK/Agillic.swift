@@ -371,12 +371,12 @@ public class Agillic : NSObject, SPRequestCallback {
 private class BasicAuth : NSObject, Auth {
     var authInfo: String
     @objc public init(user : String, password: String) {
-        let authString = "Basic \(user):\(password)"
+        let authString = "\(user):\(password)"
         guard let authData = authString.data(using: .utf8) else {
             self.authInfo = ""
             return
         }
-        self.authInfo = authData.base64EncodedString()
+        self.authInfo = "Basic \(authData.base64EncodedString())"
     }
     
     public func getAuthInfo() -> String {
