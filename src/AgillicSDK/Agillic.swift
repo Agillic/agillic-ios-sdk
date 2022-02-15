@@ -84,7 +84,14 @@ public class Agillic : NSObject, SPRequestCallback {
             return
         }
 
-        let spTracker = getTracker(recipientId: recipientId, solutionId: solutionId)
+        guard let spTracker = getTracker(recipientId: recipientId, solutionId: solutionId) else {
+            let errorMsg = "Failed to create a tracker with the provided recipient and solution ID."
+            let error = NSError(domain: "configuration error", code: 1001, userInfo: ["message" : errorMsg])
+            self.logger.log(errorMsg, level: .error)
+            completionHandler?(nil, error)
+            return
+        }
+
         self.tracker = AgillicTracker(spTracker)
         self.createMobileRegistration(inRegisterMode: true, recipientId: recipientId, completionHandler)
     }
@@ -171,36 +178,34 @@ public class Agillic : NSObject, SPRequestCallback {
 
     // MARK: - Internal functionality
 
-    private func getTracker(recipientId: String, solutionId: String) -> SPTracker {
+    private func getTracker(recipientId: String, solutionId: String) -> SPTracker? {
         let emitter = SPEmitter.build({ (builder : SPEmitterBuilder?) -> Void in
-            if let builder = builder {
-                builder.setUrlEndpoint(self.snowplowEndpoint)
-                builder.setHttpMethod(SPRequestOptions.post)
-                builder.setCallback(self)
-                builder.setProtocol(SPProtocol.https)
-                builder.setEmitRange(500)
-                builder.setEmitThreadPoolSize(20)
-                builder.setByteLimitPost(52000)
-            }
+            guard let builder = builder else { return nil }
+            builder.setUrlEndpoint(self.snowplowEndpoint)
+            builder.setHttpMethod(SPRequestOptions.post)
+            builder.setCallback(self)
+            builder.setProtocol(SPProtocol.https)
+            builder.setEmitRange(500)
+            builder.setEmitThreadPoolSize(20)
+            builder.setByteLimitPost(52000)
         })
-        let subject = SPSubject(platformContext: true, andGeoContext: true)
-        subject!.setUserId(recipientId)
+        guard let subject = SPSubject(platformContext: true, andGeoContext: true) else { return nil }
+        subject.setUserId(recipientId)
         let newTracker = SPTracker.build({ (builder : SPTrackerBuilder?) -> Void in
-            if let builder = builder {
-                builder.setEmitter(emitter)
-                builder.setAppId(solutionId)
-                builder.setBase64Encoded(false)
-                builder.setSessionContext(true)
-                builder.setSubject(subject)
-                builder.setLifecycleEvents(true)
-                builder.setAutotrackScreenViews(true)
-                builder.setScreenContext(true)
-                builder.setApplicationContext(true)
-                builder.setExceptionEvents(true)
-                builder.setInstallEvent(true)
-            }
+            guard let builder = builder else { return nil }
+            builder.setEmitter(emitter)
+            builder.setAppId(solutionId)
+            builder.setBase64Encoded(false)
+            builder.setSessionContext(true)
+            builder.setSubject(subject)
+            builder.setLifecycleEvents(true)
+            builder.setAutotrackScreenViews(true)
+            builder.setScreenContext(true)
+            builder.setApplicationContext(true)
+            builder.setExceptionEvents(true)
+            builder.setInstallEvent(true)
         })
-        return newTracker!
+        return newTracker
     }
     
     private func createMobileRegistration(inRegisterMode: Bool, recipientId: String, _ completion: ((String?, Error?) -> Void)?) {
@@ -216,7 +221,7 @@ public class Agillic : NSObject, SPRequestCallback {
             return
         }
         
-        guard let clientAppId = self.clientAppId, let clientAppVersion = self.clientAppVersion else {
+        guard let clientAppId = self.clientAppId, let clientAppVersion = self.clientAppVersion, let auth = self.auth else {
             let errorMsg = "configuration not set"
             let error = NSError(domain: "configuration error", code: -1, userInfo: ["message" : errorMsg])
             self.logger.log(errorMsg, level: .error)
@@ -256,7 +261,7 @@ public class Agillic : NSObject, SPRequestCallback {
             }
     
             var request = URLRequest(url: endpointUrl)
-            let authorization = auth!.getAuthInfo()
+            let authorization = auth.getAuthInfo()
             request.httpMethod = "PUT"
             request.httpBody = data
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -289,6 +294,7 @@ public class Agillic : NSObject, SPRequestCallback {
                         }
                     }
                 } else {
+                    //It's safe to cast URLResponse to HTTPURLResponse as long as the URL uses either a HTTP or HTTPS scheme.
                     let response = response as! HTTPURLResponse
                     if response.statusCode < 400 {
                         let message = "\(registrationModeString.capitalized) success response code: \(response.statusCode)"
@@ -363,8 +369,12 @@ public class Agillic : NSObject, SPRequestCallback {
 private class BasicAuth : NSObject, Auth {
     var authInfo: String
     @objc public init(user : String, password: String) {
-        let userPw = user + ":" + password
-        authInfo = "Basic " + userPw.data(using: .utf8)!.base64EncodedString()
+        let authString = "Basic \(user):\(password)"
+        guard let authData = authString.data(using: .utf8) else {
+            self.authInfo = ""
+            return
+        }
+        self.authInfo = authData.base64EncodedString()
     }
     
     public func getAuthInfo() -> String {

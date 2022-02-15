@@ -58,7 +58,9 @@ internal class AgillicNotificationService {
 
 internal extension UNNotificationRequest {
     var attachment: UNNotificationAttachment? {
-        guard let attachmentURL = content.userInfo["image"] as? String, let imageData = try? Data(contentsOf: URL(string: attachmentURL)!) else {
+        guard let attachmentString = content.userInfo["image"] as? String,
+              let attachmentURL = URL(string: attachmentString),
+              let imageData = try? Data(contentsOf: attachmentURL) else {
             return nil
         }
         return try? UNNotificationAttachment(data: imageData, options: nil)
