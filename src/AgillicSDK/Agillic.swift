@@ -12,9 +12,9 @@ typealias AgillicSDKResponse = (Result<String, NSError>) -> Void
 
 public class Agillic : NSObject, SPRequestCallback {
     
-    private let registrationEndpoint = "https://api-eu1.agillic.net";
-    private var snowplowEndpoint = "snowplowtrack-eu1.agillic.net";
-    private var auth: Auth? = nil;
+    private let registrationEndpoint = "https://api-eu1.agillic.net/apps"
+    private var snowplowEndpoint = "snowplowtrack-eu1.agillic.net"
+    private var auth: Auth? = nil
     private(set) public var tracker: AgillicTracker? = nil
     private var clientAppId: String? = nil
     private var clientAppVersion: String? = nil
@@ -47,7 +47,7 @@ public class Agillic : NSObject, SPRequestCallback {
      All values can be obtained in your Agillic Solution, see Agillic documention how to obtain these values.
      */
     public func configure(apiKey: String, apiSecret: String, solutionId: String) {
-        self.auth = BasicAuth(user: apiKey, password: apiSecret);
+        self.auth = BasicAuth(user: apiKey, password: apiSecret)
         self.clientAppId = SPUtilities.getAppId()
         self.clientAppVersion = SPUtilities.getAppVersion()
         self.solutionId = solutionId
@@ -68,7 +68,7 @@ public class Agillic : NSObject, SPRequestCallback {
     Error code: 1002 - recipientId missing
      \n Error code: 3001 - registration Failed after 3 attempts
      
-     Anonymous Registaions are not yet supported.
+     Anonymous registrations are not yet supported.
      */
     public func register(recipientId: String, pushNotificationToken: String? = nil, completionHandler: ((String? , Error?) -> Void)? = nil)
     {
@@ -84,7 +84,7 @@ public class Agillic : NSObject, SPRequestCallback {
         }
 
         let spTracker = getTracker(recipientId: recipientId, solutionId: solutionId)
-        self.tracker = AgillicTracker(spTracker);
+        self.tracker = AgillicTracker(spTracker)
         self.createMobileRegistration(inRegisterMode: true, recipientId: recipientId, completionHandler)
     }
 
@@ -258,7 +258,7 @@ public class Agillic : NSObject, SPRequestCallback {
                 }
                 if let error = error {
                     self.logger.log("Failed \(registrationModeString): \(error.localizedDescription)", level: .error)
-                    self.count += 1;
+                    self.count += 1
                     if self.count < 3 {
                         // Make 3 attempts
                         sleep(5000)
@@ -348,12 +348,12 @@ public class Agillic : NSObject, SPRequestCallback {
 private class BasicAuth : NSObject, Auth {
     var authInfo: String
     @objc public init(user : String, password: String) {
-        let userPw = user + ":" + password;
-        authInfo = "Basic " + userPw.data(using: .utf8)!.base64EncodedString();
+        let userPw = user + ":" + password
+        authInfo = "Basic " + userPw.data(using: .utf8)!.base64EncodedString()
     }
     
     public func getAuthInfo() -> String {
-        return authInfo;
+        return authInfo
     }
 }
 
