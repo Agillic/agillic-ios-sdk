@@ -12,9 +12,9 @@ typealias AgillicSDKResponse = (Result<String, NSError>) -> Void
 
 public class Agillic : NSObject, SPRequestCallback {
     
-    private let registrationEndpoint = "https://api-eu1.agillic.net";
-    private var snowplowEndpoint = "snowplowtrack-eu1.agillic.net";
-    private var auth: Auth? = nil;
+    private let registrationEndpoint = "https://api-eu1.agillic.net/apps"
+    private var snowplowEndpoint = "snowplowtrack-eu1.agillic.net"
+    private var auth: Auth? = nil
     private(set) public var tracker: AgillicTracker? = nil
     private var clientAppId: String? = nil
     private var clientAppVersion: String? = nil
@@ -47,7 +47,7 @@ public class Agillic : NSObject, SPRequestCallback {
      All values can be obtained in your Agillic Solution, see Agillic documention how to obtain these values.
      */
     public func configure(apiKey: String, apiSecret: String, solutionId: String) {
-        self.auth = BasicAuth(user: apiKey, password: apiSecret);
+        self.auth = BasicAuth(user: apiKey, password: apiSecret)
         self.clientAppId = SPUtilities.getAppId()
         self.clientAppVersion = SPUtilities.getAppVersion()
         self.solutionId = solutionId
@@ -55,24 +55,23 @@ public class Agillic : NSObject, SPRequestCallback {
     
     /**
      Register this app installation into the Agillic solutiion.
-     Crate a new entry in the AGILLIC_REGISTRAION OTM Table in Recipient doesn't already have a Regration.
+     Create a new entry in the AGILLIC_REGISTRAION OTM Table in Recipient doesn't already have a Regration.
      
      - precondition: AgillicMobileSDK.shared().configure(:) must be called prior to this.
-     - precondition: Recipient needs to exist in the Agillic Solution to in order successfully register installation
+     - precondition: Recipient needs to exist in the Agillic Solution in order to successfully register the installation
 
      - Parameter recipientId: This is mapped to the Recipient.Email in the Agillic Solution.
      - Parameter pushNotificationToken: No description
      - Parameter completionHandler: success/failure callback
     
-     - Throws: Error code: 1001 - solutionID missing
-    Error code: 1002 - recipientId missing
-     \n Error code: 3001 - registration Failed after 3 attempts
+     - Throws:
+            Error code: 1001 - solutionID missing
+            Error code: 1002 - recipientId missing
+            Error code: 3001 - registration Failed after 3 attempts
      
-     Anonymous Registaions are not yet supported.
+     Anonymous registrations are not yet supported.
      */
-    public func register(recipientId: String,
-                  pushNotificationToken: String? = nil,
-                  completionHandler: ((String? , Error?) -> Void)? = nil)
+    public func register(recipientId: String, pushNotificationToken: String? = nil, completionHandler: ((String? , Error?) -> Void)? = nil)
     {
         self.recipientId = recipientId
         self.pushNotificationToken = pushNotificationToken
@@ -86,8 +85,34 @@ public class Agillic : NSObject, SPRequestCallback {
         }
 
         let spTracker = getTracker(recipientId: recipientId, solutionId: solutionId)
-        self.tracker = AgillicTracker(spTracker);
-        createMobileRegistration(completionHandler)
+        self.tracker = AgillicTracker(spTracker)
+        self.createMobileRegistration(inRegisterMode: true, recipientId: recipientId, completionHandler)
+    }
+
+    /**
+     Unregister this app installation into the Agillic solutiion.
+
+     - precondition: AgillicMobileSDK.shared().configure(:) must be called prior to this.
+     - precondition: Recipient needs to exist in the Agillic Solution to in order successfully unregister the installation
+
+     - Parameter recipientId: This is mapped to the Recipient.Email in the Agillic Solution.
+     - Parameter completionHandler: success/failure callback
+
+     - Throws:
+            Error code: 1001 - solutionID missing
+            Error code: 1002 - recipientId missing
+            Error code: 3001 - registration Failed after 3 attempts
+     */
+    public func unregister(recipientId: String, completionHandler: ((String? , Error?) -> Void)? = nil) {
+        guard let solutionId = self.solutionId else {
+            let errorMsg = "Configuration not set"
+            let error = NSError(domain: "configuration error", code: 1001, userInfo: ["message" : errorMsg])
+            self.logger.log(errorMsg, level: .error)
+            completionHandler?(nil, error)
+            return
+        }
+
+        self.createMobileRegistration(inRegisterMode: false, recipientId: recipientId, completionHandler)
     }
     
     
@@ -148,37 +173,44 @@ public class Agillic : NSObject, SPRequestCallback {
 
     private func getTracker(recipientId: String, solutionId: String) -> SPTracker {
         let emitter = SPEmitter.build({ (builder : SPEmitterBuilder?) -> Void in
-            builder!.setUrlEndpoint(self.snowplowEndpoint)
-            builder!.setHttpMethod(SPRequestOptions.post)
-            builder!.setCallback(self)
-            builder!.setProtocol(SPProtocol.https)
-            builder!.setEmitRange(500)
-            builder!.setEmitThreadPoolSize(20)
-            builder!.setByteLimitPost(52000)
+            if let builder = builder {
+                builder.setUrlEndpoint(self.snowplowEndpoint)
+                builder.setHttpMethod(SPRequestOptions.post)
+                builder.setCallback(self)
+                builder.setProtocol(SPProtocol.https)
+                builder.setEmitRange(500)
+                builder.setEmitThreadPoolSize(20)
+                builder.setByteLimitPost(52000)
+            }
         })
         let subject = SPSubject(platformContext: true, andGeoContext: true)
         subject!.setUserId(recipientId)
         let newTracker = SPTracker.build({ (builder : SPTrackerBuilder?) -> Void in
-            builder!.setEmitter(emitter)
-            builder!.setAppId(solutionId)
-            builder!.setBase64Encoded(false)
-            builder!.setSessionContext(true)
-            builder!.setSubject(subject)
-            builder!.setLifecycleEvents(true)
-            builder!.setAutotrackScreenViews(true)
-            builder!.setScreenContext(true)
-            builder!.setApplicationContext(true)
-            builder!.setExceptionEvents(true)
-            builder!.setInstallEvent(true)
+            if let builder = builder {
+                builder.setEmitter(emitter)
+                builder.setAppId(solutionId)
+                builder.setBase64Encoded(false)
+                builder.setSessionContext(true)
+                builder.setSubject(subject)
+                builder.setLifecycleEvents(true)
+                builder.setAutotrackScreenViews(true)
+                builder.setScreenContext(true)
+                builder.setApplicationContext(true)
+                builder.setExceptionEvents(true)
+                builder.setInstallEvent(true)
+            }
         })
         return newTracker!
     }
     
-    private func createMobileRegistration(_ completion: ((String?, Error?) -> Void)?) {
-        let fullRegistrationUrl = String(format: "%@/register/%@", self.registrationEndpoint, self.recipientId!)
+    private func createMobileRegistration(inRegisterMode: Bool, recipientId: String, _ completion: ((String?, Error?) -> Void)?) {
+
+        let registrationModeString = inRegisterMode ? "registration" : "unregistration"
+
+        let fullRegistrationUrl = inRegisterMode ? String(format: "%@/register/%@", self.registrationEndpoint, recipientId) : String(format: "%@/unregister/%@", self.registrationEndpoint, recipientId)
         guard let endpointUrl = URL(string: fullRegistrationUrl) else {
-            let errorMsg = "Failed to create registration \(fullRegistrationUrl)"
-            let error = NSError(domain: "registration", code: -1, userInfo: ["message" : errorMsg])
+            let errorMsg = "Failed to create \(registrationModeString) \(fullRegistrationUrl)"
+            let error = NSError(domain: "\(registrationModeString)", code: -1, userInfo: ["message" : errorMsg])
             self.logger.log(errorMsg, level: .error)
             completion?(nil, error)
             return
@@ -188,12 +220,12 @@ public class Agillic : NSObject, SPRequestCallback {
             let errorMsg = "configuration not set"
             let error = NSError(domain: "configuration error", code: -1, userInfo: ["message" : errorMsg])
             self.logger.log(errorMsg, level: .error)
-            completion!(nil, error)
+            completion?(nil, error)
             return
         }
         
         guard let tracker = self.tracker else {
-            let errorMsg = "tracker not configrued"
+            let errorMsg = "tracker not configured"
             let error = NSError(domain: "tracker", code: -1, userInfo: ["message" : errorMsg])
             self.logger.log(errorMsg, level: .error)
             completion?(nil, error)
@@ -201,23 +233,26 @@ public class Agillic : NSObject, SPRequestCallback {
         }
 
         // Make JSON to send to send to server
-        let json : [String:String] =
+        var json : [String:String] =
         [
             "appInstallationId": tracker.getSPTracker().getSessionUserId(),
             "clientAppId": clientAppId,
             "clientAppVersion": clientAppVersion,
             "osName" : SPUtilities.getOSType(),
             "osVersion" : SPUtilities.getOSVersion(),
-            "pushNotificationToken" : self.pushNotificationToken ?? "",
             "deviceModel": SPUtilities.getDeviceModel(),
             "modelDimX" :  getXDimension(SPUtilities.getResolution()),
             "modelDimY" :  getYDimension(SPUtilities.getResolution())
         ]
+        if inRegisterMode {
+            json["pushNotificationToken"] = self.pushNotificationToken ?? ""
+        }
+
         do {
             let data = try JSONSerialization.data(withJSONObject: json, options: [])
             // Convert to a string and print
             if let JSONString = String(data: data, encoding: String.Encoding.utf8) {
-                self.logger.log("Registration JSON: \(JSONString)", level: .debug)
+                self.logger.log("\(registrationModeString.capitalized) JSON: \(JSONString)", level: .debug)
             }
     
             var request = URLRequest(url: endpointUrl)
@@ -229,40 +264,53 @@ public class Agillic : NSObject, SPRequestCallback {
             request.addValue(authorization, forHTTPHeaderField: "Authorization")
 
             let task = URLSession.shared.dataTask(with: request, completionHandler: { [weak self] data, response, error in
+                guard let self = self else {
+                    let error = NSError(domain: "\(registrationModeString)", code: 3001, userInfo: ["message" : "Lost reference to the Agillic SDK"])
+                    DispatchQueue.main.async {
+                        completion?(nil, error)
+                    }
+                    return
+                }
                 if let error = error {
-                    self?.logger.log("Failed to register: \(error.localizedDescription)", level: .error)
-                    self?.count += 1;
-                    if self!.count < 3 {
+                    self.logger.log("Failed \(registrationModeString): \(error.localizedDescription)", level: .error)
+                    self.count += 1
+                    if self.count < 3 {
                         // Make 3 attempts
                         sleep(5000)
-                        self?.createMobileRegistration(completion)
+                        self.createMobileRegistration(inRegisterMode: inRegisterMode, recipientId: recipientId, completion)
                     } else {
                         // Failed after three attempts
                         let errorMsg =  "Failed after 3 attempt: " + error.localizedDescription
-                        let error = NSError(domain: "registration", code: 3001, userInfo: ["message" : errorMsg])
-                        self?.logger.log(errorMsg, level: .error)
-                        self?.count = 0
-                        completion?(nil, error)
+                        let error = NSError(domain: "\(registrationModeString)", code: 3001, userInfo: ["message" : errorMsg])
+                        self.logger.log(errorMsg, level: .error)
+                        self.count = 0
+                        DispatchQueue.main.async {
+                            completion?(nil, error)
+                        }
                     }
                 } else {
-                    let response = response as? HTTPURLResponse
-                    if response!.statusCode < 400 {
-                        let message = "Register success response code: \(response!.statusCode)"
-                        self?.logger.log(message, level: .debug)
-                        completion?(message, nil)
+                    let response = response as! HTTPURLResponse
+                    if response.statusCode < 400 {
+                        let message = "\(registrationModeString.capitalized) success response code: \(response.statusCode)"
+                        self.logger.log(message, level: .debug)
+                        DispatchQueue.main.async {
+                            completion?(message, nil)
+                        }
                     }
                     else {
-                        let errorMsg = "Register failed with error code: \(response!.statusCode)"
-                        let error = NSError(domain: "registration", code: -1, userInfo: ["message" : errorMsg])
-                        self?.logger.log(errorMsg, level: .error)
-                        completion?(nil, error)
+                        let errorMsg = "\(registrationModeString.capitalized) failed with error code: \(response.statusCode)"
+                        let error = NSError(domain: "\(registrationModeString)", code: -1, userInfo: ["message" : errorMsg])
+                        self.logger.log(errorMsg, level: .error)
+                        DispatchQueue.main.async {
+                            completion?(nil, error)
+                        }
                     }
                 }
             })
             task.resume()
-            self.logger.log("Registration sent", level: .debug)
+            self.logger.log("\(registrationModeString.capitalized) sent", level: .debug)
         } catch{
-            self.logger.log("Registration exception", level: .debug)
+            self.logger.log("\(registrationModeString.capitalized) exception", level: .debug)
         }
     }
     
@@ -315,12 +363,12 @@ public class Agillic : NSObject, SPRequestCallback {
 private class BasicAuth : NSObject, Auth {
     var authInfo: String
     @objc public init(user : String, password: String) {
-        let userPw = user + ":" + password;
-        authInfo = "Basic " + userPw.data(using: .utf8)!.base64EncodedString();
+        let userPw = user + ":" + password
+        authInfo = "Basic " + userPw.data(using: .utf8)!.base64EncodedString()
     }
     
     public func getAuthInfo() -> String {
-        return authInfo;
+        return authInfo
     }
 }
 
