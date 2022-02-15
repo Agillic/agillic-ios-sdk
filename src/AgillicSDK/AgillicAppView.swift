@@ -15,10 +15,14 @@ public class AgillicAppView: AgillicTrackingEvent {
     var previousScreenId: String?
     
     public init(screenName: String? = nil, type: String? = nil, previousScreenId: String? = nil) {
-        self.screenId = SPUtilities.getUUIDString()!
-        self.screenName = screenName != nil ? screenName! : screenId
+        self.screenId = SPUtilities.getUUIDString() ?? ""
         self.type = type
         self.previousScreenId = previousScreenId
+        if let screenName = screenName {
+            self.screenName = screenName
+        } else {
+            self.screenName = self.screenId
+        }
     }
     
     private func buildSPEvent() -> SPScreenView? {

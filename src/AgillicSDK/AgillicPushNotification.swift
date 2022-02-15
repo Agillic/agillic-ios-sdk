@@ -16,20 +16,23 @@ internal class AgillicPushNotification : AgillicTrackingEvent {
     
     public init(_ screenId: String, screenName: String? = nil, type: String? = nil, previousScreenId: String? = nil) {
         self.screenId = screenId
-        self.screenName = screenName != nil ? screenName! : screenId
         self.type = type
         self.previousScreenId = previousScreenId
+        if let screenName = screenName {
+            self.screenName = screenName
+        } else {
+            self.screenName = screenId
+        }
     }
     
     func getSPEvent() -> SPPushNotification? {
         let event = SPPushNotification.build({(builder : SPPushNotificationBuilder?) -> Void in
-            if let builder = builder {
-                builder.setTrigger("PUSH") // can be "PUSH", "LOCATION", "CALENDAR", or "TIME_INTERVAL"
-                builder.setAction("action")
-                builder.setDeliveryDate("date")
-                builder.setCategoryIdentifier("category")
-                builder.setThreadIdentifier("thread")
-            }
+            guard let builder = builder else { return nil }
+            builder.setTrigger("PUSH") // can be "PUSH", "LOCATION", "CALENDAR", or "TIME_INTERVAL"
+            builder.setAction("action")
+            builder.setDeliveryDate("date")
+            builder.setCategoryIdentifier("category")
+            builder.setThreadIdentifier("thread")
         })
         return event
     }

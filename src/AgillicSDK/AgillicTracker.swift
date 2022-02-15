@@ -17,24 +17,24 @@ public class AgillicTracker {
     }
     
     public func track(_ event : AgillicTrackingEvent) {
-        if (enabled) {
-            event.track(tracker)
+        if self.enabled {
+            event.track(self.tracker)
         }
     }
     
     public func getSPTracker() -> SPTracker {
-        return tracker
+        return self.tracker
     }
 
     public func pauseTracking() {
-        enabled = false
+        self.enabled = false
     }
 
     public func resumeTracking() {
-        enabled = false
+        self.enabled = false
     }
     
     public func isTracking() -> Bool {
-        return enabled
+        return self.enabled
     }
 }
