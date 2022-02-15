@@ -88,7 +88,7 @@ Agillic.shared.logger.logLevel = .verbose
 **Prerequisites**
 * You need to make sure to do this AFTER `Agillic.shared.configure()`.
 * You must do this upon every launch before doing any [App View Tracking](README.md#app-view-tracking). 
-* Register has to be done in your Sign Up/Sign In flow but also on you splash screen if users are automatically logged in with an Access Token.
+* Register has to be done in your Sign Up/Sign In flow but also on your splash screen if users are automatically logged in with an Access Token.
 * ``RECIPIENT ID`` - Has to match `RECIPIENT.EMAIL` in the Agillic Recipient Table
 
 ###### Register App Installation
@@ -133,6 +133,14 @@ func application(_ application: UIApplication, didRegisterForRemoteNotifications
     // Register with PushToken
     Agillic.shared.register(recipientId: "RECIPIENT ID", pushNotificationToken: pushToken)
 }
+```
+
+###Unregister Push Token
+
+If you wish to remove a push token from an Agillic Recipient, you can use the `unregister` function. This should be done when a user is logging out of your app.
+
+```swift
+Agillic.shared.unregister(recipientId: "Recipient ID")
 ```
 
 ## Reading Push Notification sent from your Agillic

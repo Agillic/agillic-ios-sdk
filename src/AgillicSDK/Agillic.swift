@@ -55,18 +55,19 @@ public class Agillic : NSObject, SPRequestCallback {
     
     /**
      Register this app installation into the Agillic solutiion.
-     Crate a new entry in the AGILLIC_REGISTRAION OTM Table in Recipient doesn't already have a Regration.
+     Create a new entry in the AGILLIC_REGISTRAION OTM Table in Recipient doesn't already have a Regration.
      
      - precondition: AgillicMobileSDK.shared().configure(:) must be called prior to this.
-     - precondition: Recipient needs to exist in the Agillic Solution to in order successfully register installation
+     - precondition: Recipient needs to exist in the Agillic Solution in order to successfully register the installation
 
      - Parameter recipientId: This is mapped to the Recipient.Email in the Agillic Solution.
      - Parameter pushNotificationToken: No description
      - Parameter completionHandler: success/failure callback
     
-     - Throws: Error code: 1001 - solutionID missing
-    Error code: 1002 - recipientId missing
-     \n Error code: 3001 - registration Failed after 3 attempts
+     - Throws:
+            Error code: 1001 - solutionID missing
+            Error code: 1002 - recipientId missing
+            Error code: 3001 - registration Failed after 3 attempts
      
      Anonymous registrations are not yet supported.
      */
@@ -88,6 +89,20 @@ public class Agillic : NSObject, SPRequestCallback {
         self.createMobileRegistration(inRegisterMode: true, recipientId: recipientId, completionHandler)
     }
 
+    /**
+     Unregister this app installation into the Agillic solutiion.
+
+     - precondition: AgillicMobileSDK.shared().configure(:) must be called prior to this.
+     - precondition: Recipient needs to exist in the Agillic Solution to in order successfully unregister the installation
+
+     - Parameter recipientId: This is mapped to the Recipient.Email in the Agillic Solution.
+     - Parameter completionHandler: success/failure callback
+
+     - Throws:
+            Error code: 1001 - solutionID missing
+            Error code: 1002 - recipientId missing
+            Error code: 3001 - registration Failed after 3 attempts
+     */
     public func unregister(recipientId: String, completionHandler: ((String? , Error?) -> Void)? = nil) {
         guard let solutionId = self.solutionId else {
             let errorMsg = "Configuration not set"
