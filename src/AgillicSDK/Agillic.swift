@@ -180,30 +180,32 @@ public class Agillic : NSObject, SPRequestCallback {
 
     private func getTracker(recipientId: String, solutionId: String) -> SPTracker? {
         let emitter = SPEmitter.build({ (builder : SPEmitterBuilder?) -> Void in
-            guard let builder = builder else { return nil }
-            builder.setUrlEndpoint(self.snowplowEndpoint)
-            builder.setHttpMethod(SPRequestOptions.post)
-            builder.setCallback(self)
-            builder.setProtocol(SPProtocol.https)
-            builder.setEmitRange(500)
-            builder.setEmitThreadPoolSize(20)
-            builder.setByteLimitPost(52000)
+            if let builder = builder {
+                builder.setUrlEndpoint(self.snowplowEndpoint)
+                builder.setHttpMethod(SPRequestOptions.post)
+                builder.setCallback(self)
+                builder.setProtocol(SPProtocol.https)
+                builder.setEmitRange(500)
+                builder.setEmitThreadPoolSize(20)
+                builder.setByteLimitPost(52000)
+            }
         })
         guard let subject = SPSubject(platformContext: true, andGeoContext: true) else { return nil }
         subject.setUserId(recipientId)
         let newTracker = SPTracker.build({ (builder : SPTrackerBuilder?) -> Void in
-            guard let builder = builder else { return nil }
-            builder.setEmitter(emitter)
-            builder.setAppId(solutionId)
-            builder.setBase64Encoded(false)
-            builder.setSessionContext(true)
-            builder.setSubject(subject)
-            builder.setLifecycleEvents(true)
-            builder.setAutotrackScreenViews(true)
-            builder.setScreenContext(true)
-            builder.setApplicationContext(true)
-            builder.setExceptionEvents(true)
-            builder.setInstallEvent(true)
+            if let builder = builder {
+                builder.setEmitter(emitter)
+                builder.setAppId(solutionId)
+                builder.setBase64Encoded(false)
+                builder.setSessionContext(true)
+                builder.setSubject(subject)
+                builder.setLifecycleEvents(true)
+                builder.setAutotrackScreenViews(true)
+                builder.setScreenContext(true)
+                builder.setApplicationContext(true)
+                builder.setExceptionEvents(true)
+                builder.setInstallEvent(true)
+            }
         })
         return newTracker
     }
