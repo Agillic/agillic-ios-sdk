@@ -216,7 +216,7 @@ public class Agillic : NSObject, SPRequestCallback {
             return
         }
         
-        guard let clientAppId = self.clientAppId, let clientAppVersion = self.clientAppVersion else {
+        guard let clientAppId = self.clientAppId, let clientAppVersion = self.clientAppVersion, let auth = self.auth else {
             let errorMsg = "configuration not set"
             let error = NSError(domain: "configuration error", code: -1, userInfo: ["message" : errorMsg])
             self.logger.log(errorMsg, level: .error)
@@ -256,7 +256,7 @@ public class Agillic : NSObject, SPRequestCallback {
             }
     
             var request = URLRequest(url: endpointUrl)
-            let authorization = auth!.getAuthInfo()
+            let authorization = auth.getAuthInfo()
             request.httpMethod = "PUT"
             request.httpBody = data
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -363,8 +363,9 @@ public class Agillic : NSObject, SPRequestCallback {
 private class BasicAuth : NSObject, Auth {
     var authInfo: String
     @objc public init(user : String, password: String) {
-        let userPw = user + ":" + password
-        authInfo = "Basic " + userPw.data(using: .utf8)!.base64EncodedString()
+        let authString = "Basic \(user):\(password)"
+        let authData = authString.data(using: .utf8)!
+        self.authInfo = authData.base64EncodedString()
     }
     
     public func getAuthInfo() -> String {
