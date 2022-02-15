@@ -139,8 +139,8 @@ func application(_ application: UIApplication, didRegisterForRemoteNotifications
 
 If you wish to remove a push token from an Agillic Recipient, you can use the `unregister` function. This should be done when a user is logging out of your app.
 
-```swift
-Agillic.shared.unregister(recipientId: "Recipient ID")
+```kotlin
+Agillic.unregister(recipientId = "RECIPIENT ID", pushNotificationToken = pushToken, context = context)
 ```
 
 ## Reading Push Notification sent from your Agillic
